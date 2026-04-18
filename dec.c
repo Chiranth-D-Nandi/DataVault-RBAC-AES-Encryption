@@ -5,12 +5,12 @@
 #include <openssl/rand.h>
 #include "dec.h"
 
-// Helper: removes '_encrypted' from the base name, appends '_decrypted', and preserves extension.
+//removing '_encrypted' from the encrypted file, and appending '_decrypted'
 void get_decrypted_filename(const char *infile, char *outfile, size_t outsize) {
     const char *dot = strrchr(infile, '.');
     if (dot) {
         size_t base_len = dot - infile;
-        // Look for "_encrypted" before the extension
+        //find appended text
         const char *enc = NULL;
         for (const char *p = infile; p < dot; ++p) {
             if (strncmp(p, "_encrypted", 10) == 0 && p + 10 == dot) {
@@ -30,7 +30,6 @@ void get_decrypted_filename(const char *infile, char *outfile, size_t outsize) {
             strcat(outfile, "_decrypted");
             strcat(outfile, dot);
         } else {
-            // No "_encrypted" before extension, just insert "_decrypted"
             if (base_len + 10 + strlen(dot) + 1 > outsize) {
                 strncpy(outfile, infile, outsize - 1);
                 outfile[outsize - 1] = '\0';
@@ -42,7 +41,7 @@ void get_decrypted_filename(const char *infile, char *outfile, size_t outsize) {
             strcat(outfile, dot);
         }
     } else {
-        // No extension, just append _decrypted
+
         if (strlen(infile) + 10 + 1 > outsize) {
             strncpy(outfile, infile, outsize - 1);
             outfile[outsize - 1] = '\0';
@@ -76,7 +75,6 @@ int decrypt(const char *infile, const char *keyfile) {
     }
     fclose(kf);
 
-    // Output file with _decrypted and preserved extension
     char outfile[512];
     get_decrypted_filename(infile, outfile, sizeof(outfile));
     FILE *fout = fopen(outfile, "wb");

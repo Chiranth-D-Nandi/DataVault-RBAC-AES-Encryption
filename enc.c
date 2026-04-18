@@ -5,7 +5,7 @@
 #include <openssl/rand.h>
 #include "enc.h"
 
-// Helper: insert _encrypted before extension, or append if no extension
+//insert _encrypted after filename if not.
 void get_encrypted_filename(const char *infile, char *outfile, size_t outsize) {
     const char *dot = strrchr(infile, '.');
     if (dot) {
@@ -44,7 +44,7 @@ int final(const char *infile) {
         return 1;
     }
 
-    // Save key and IV to file
+    //saving IV and KEY to a file.
     char keyfile[512];
     get_encrypted_filename(infile, keyfile, sizeof(keyfile));
     strcat(keyfile, ".key");
@@ -58,7 +58,7 @@ int final(const char *infile) {
     fwrite(iv, 1, 16, kf);
     fclose(kf);
 
-    // Output file with _encrypted and preserved extension
+    //output encrypted file.
     char outfile[512];
     get_encrypted_filename(infile, outfile, sizeof(outfile));
     FILE *fout = fopen(outfile, "wb");

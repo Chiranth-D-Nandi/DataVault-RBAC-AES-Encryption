@@ -7,12 +7,11 @@
 #include "enc.h"
 #include "dec.h"
 
-// Globals for staff/admin windows
 GtkWidget *main_window, *status_label;
 char current_user[100] = "";
 char current_role[16] = "";
 
-// ==== Utility for Logging ====
+//generating user logs
 void log_encryption(const char *username, const char *file_encrypted) {
     FILE *fap = fopen("access_log.csv", "a");
     if (!fap) return;
@@ -27,7 +26,6 @@ void log_encryption(const char *username, const char *file_encrypted) {
     fclose(fap);
 }
 
-// ==== Login/Register Widgets ====
 struct logindata {
     GtkWidget *user_entry;
     GtkWidget *pass_entry;
@@ -36,12 +34,10 @@ struct logindata {
 };
 GtkWidget *login_user_entry, *login_pass_entry;
 
-// ==== Forward Declarations ====
 void open_swin();
 void open_awin();
 void show_main_window();
 
-// ==== Register Logic ====
 void validate_register(GtkWidget *widget, gpointer data){
     struct logindata *rdata = (struct logindata *)data;
     const char *username = gtk_entry_get_text(GTK_ENTRY(rdata->user_entry));
@@ -76,7 +72,6 @@ void validate_register(GtkWidget *widget, gpointer data){
     gtk_widget_destroy(rdata->window);
 }
 
-// ==== Register Window ====
 void show_register_fields(GtkWidget *widget, gpointer data){
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Register New User");
@@ -111,7 +106,6 @@ void show_register_fields(GtkWidget *widget, gpointer data){
     gtk_widget_show_all(window);
 }
 
-// ==== Login Logic ====
 void validate_login(GtkWidget *widget, gpointer data) {
     const char *username = gtk_entry_get_text(GTK_ENTRY(login_user_entry));
     const char *password = gtk_entry_get_text(GTK_ENTRY(login_pass_entry));
@@ -147,7 +141,6 @@ void validate_login(GtkWidget *widget, gpointer data) {
     }
 }
 
-// ==== Main/Login Window ====
 void show_main_window() {
     main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_window), "Data Vault: Encryption & RBAC");
@@ -156,7 +149,6 @@ void show_main_window() {
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(main_window), vbox);
 
-    // Load and scale image
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_scale("logo.png", 128, 128, TRUE, NULL);
     GtkWidget *imag = gtk_image_new_from_pixbuf(pixbuf);
     if (pixbuf) g_object_unref(pixbuf);
@@ -185,8 +177,7 @@ void show_main_window() {
     g_signal_connect(register_btn, "clicked", G_CALLBACK(show_register_fields), NULL);
     gtk_widget_show_all(main_window);
 }
-
-// ==== Staff Window ====
+//staff
 GtkWidget *swin, *choose, *selectf, *logout_btn, *status_label_staff;
 gchar *selected_filepath = NULL;
 void logout_to_login(GtkWidget *widget, gpointer user_data) {
@@ -240,7 +231,7 @@ void open_swin() {
     gtk_widget_show_all(swin);
 }
 
-// ==== Admin Window ====
+//admin
 GtkWidget *awin, *choose_enc, *choose_key, *decrypt_btn, *logout_btn_admin, *status_label_admin;
 gchar *selected_enc_file = NULL, *selected_key_file = NULL;
 GtkWidget *logbtn, *log_text_view, *log_scroll_win;
@@ -292,13 +283,13 @@ void open_awin() {
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(awin), vbox);
 
-    // Label and chooser for encrypted file
+    //file upload encrypted file
     GtkWidget *enc_label = gtk_label_new("Upload Encrypted File:");
     gtk_box_pack_start(GTK_BOX(vbox), enc_label, FALSE, FALSE, 0);
     choose_enc = gtk_file_chooser_button_new("Choose Encrypted File", GTK_FILE_CHOOSER_ACTION_OPEN);
     gtk_box_pack_start(GTK_BOX(vbox), choose_enc, FALSE, FALSE, 0);
 
-    // Label and chooser for key file
+    //file upload key
     GtkWidget *key_label = gtk_label_new("Upload Key File:");
     gtk_box_pack_start(GTK_BOX(vbox), key_label, FALSE, FALSE, 0);
     choose_key = gtk_file_chooser_button_new("Choose Key File", GTK_FILE_CHOOSER_ACTION_OPEN);
@@ -329,7 +320,7 @@ void open_awin() {
     gtk_widget_show_all(awin);
 }
 
-// ==== Main Entrypoint ====
+//export
 int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     show_main_window();
